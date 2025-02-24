@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  Writer
+  Editor
+}
+
+enum Status {
+  Active
+  Inactive
+}
+
+enum ArticleStatus {
+  Published
+  ForEdit
+}
+
+model Article {
+  id        String        @id @default(cuid())
+  company   Company       @relation("CompanyArticles", fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String        @map("company_id")
+  content   String        @db.Text
+  editor    User?         @relation("EditorArticles", fields: [editorId], references: [id], onDelete: SetNull)
+  editorId  String?       @map("editor_id")
+  image     String        @db.VarChar(255)
+  link      String        @db.VarChar(255)
+  status    ArticleStatus @default(ForEdit)
+  title     String        @db.VarChar(255)
+  writer    User          @relation("WriterArticles", fields: [writerId], references: [id], onDelete: Cascade)
+  writerId  String        @map("writer_id")
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([companyId]) // Add index for faster queries
+  @@index([editorId])
+  @@index([writerId])
+  @@map("article")
+}
+
+model Company {
+  id      String    @id @default(cuid())
+  logo    String    @db.VarChar(255)
+  name    String    @unique @db.VarChar(255)
+  status  Status    @default(Active)
+  article Article[] @relation("CompanyArticles")
+
+  @@map("company")
+}
+
+model User {
+  id              String         @id @default(cuid())
+  firstName       String         @map("first_name")
+  lastName        String         @map("last_name")
+  password        String         @db.VarChar(255)
+  status          Status         @default(Active)
+  role            Role           @default(Writer)
+  userName        String         @unique @map("user_name")
+  articlesEdited  Article[]      @relation("EditorArticles")
+  articlesWritten Article[]      @relation("WriterArticles")
+  refreshTokens   RefreshToken[] @relation("UserRefreshTokens")
+
+  @@index([userName]) // Add index for quick lookups
+  @@map("user")
+}
+
+model RefreshToken {
+  id             String   @id @default(cuid())
+  user           User     @relation("UserRefreshTokens", fields: [userId], references: [id], onDelete: Cascade)
+  userId         String   @unique @map("user_id")
+  token          String   @unique @db.VarChar(255)
+  expirationDate DateTime @map("expiration_date")
+
+  @@index([userId]) // Index for faster token retrieval
+  @@map("refresh_token")
+}
