@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import prisma from "@/prisma/client";
 import { generateAccessToken, generateRefreshToken } from "@/app/_lib/jwt";
 
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       }
 
       // Set access token as httpOnly cookie
-      response.cookies.set("jwt", refreshToken, {
+      response.cookies.set("jwt", accessToken, {
         httpOnly: true,
         secure: false, // Send cookie over HTTPS in production
         sameSite: "lax", // Restrict cookie sharing across sites

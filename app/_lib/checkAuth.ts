@@ -1,7 +1,7 @@
 import { verifyToken } from "@/app/_lib/jwt";
 import { NextRequest } from "next/server";
 
-export async function getAuthUser(request: NextRequest) {
+export async function checkAuth(request: NextRequest) {
   const tokenCookie = request.cookies.get("jwt");
   if (!tokenCookie) return null;
 

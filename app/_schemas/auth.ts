@@ -1,5 +1,5 @@
 import { z } from 'zod'
- 
+
 export const LoginFormSchema = z.object({
   userName: z
     .string()
@@ -15,13 +15,14 @@ export const LoginFormSchema = z.object({
     })
     .trim(),
 })
- 
-export type FormState =
-  | {
-      errors?: {
-        userName?: string[]
-        password?: string[]
-      }
-      message?: string
-    }
-  | undefined
+
+export type FormState = {
+  errors?: {
+    userName?: string[];
+    password?: string[];
+    general?: string[];
+  };
+  message?: string;
+  accessToken?: string;
+  refreshToken?: string;
+} | undefined;
