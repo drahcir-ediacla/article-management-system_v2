@@ -96,7 +96,7 @@ const ArticleList = () => {
                             <tr key={article.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                 <td className="px-6 py-4">
                                     <div className="w-12 h-12 overflow-hidden">
-                                        <Image src={article.image} alt={article.title} width={50} height={50} objectFit="cover" />
+                                        <Image src={article.image} alt={article.title} width={50} height={50} style={{ objectFit: "cover" }} />
                                     </div>
                                 </td>
                                 <td className="px-6 py-4">{article.title}</td>

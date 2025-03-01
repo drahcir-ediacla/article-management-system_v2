@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
             httpOnly: true,
             secure: false, // Set to true in production
             sameSite: "lax",
-            maxAge: 30, // 30 seconds
+            maxAge: 24 * 60 * 60, // 30 seconds
             path: "/",
         });
 

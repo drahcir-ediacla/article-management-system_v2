@@ -59,7 +59,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         httpOnly: true,
         secure: false, // Send cookie over HTTPS in production
         sameSite: "lax", // Restrict cookie sharing across sites
-        maxAge: 30, // 30 seconds
+        maxAge: 24 * 60 * 60, // 30 seconds
         path: "/", // Cookie available across the entire app
       });
 
