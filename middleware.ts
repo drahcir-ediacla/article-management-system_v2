@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
-import { refreshAccessToken } from "./app/_lib/axiosInstance";
 
 const protectedRoutes: Record<string, string[]> = {
     "/dashboard": ["Writer", "Editor"],

@@ -55,3 +55,7 @@ a {
   min-height: 150px;
   outline: none;
 }
+
+h1 {
+  font-size: 2rem;
+}

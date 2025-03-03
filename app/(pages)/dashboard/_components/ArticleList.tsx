@@ -72,9 +72,15 @@ const ArticleList = () => {
     return (
         <>
             <div className="flex gap-4 justify-center font-medium m-5">
-                <Button label="Add New Article" />
-                <Button label="Add New User" />
-                <Button label="Add New Company" />
+                <Link href="/dashboard/add-article">
+                    <Button label="Add New Article" />
+                </Link>
+                <Link href="/dashboard/add-user">
+                    <Button label="Add New User" />
+                </Link>
+                <Link href="/dashboard/add-company">
+                    <Button label="Add New Company" />
+                </Link>
             </div>
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg m-5">
                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">

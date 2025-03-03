@@ -1,6 +1,10 @@
 const AddArticlePage = () => {
     return (
-        <h1>Add Article</h1>
+        <div className="m-[20px]">
+            <h1 className="font-bold">Add New Article</h1>
+            <form></form>
+        </div>
+        
     )
 }
 
