@@ -5,6 +5,7 @@ import { generateAccessToken } from "@/app/_lib/jwt";
 
 export async function GET(request: NextRequest) {
     const tokenCookie = request.cookies.get("refreshJwt");
+    const redirectPath = request.nextUrl.searchParams.get("redirect") || "/dashboard";
 
     if (!tokenCookie) {
         return NextResponse.json({ message: "No refresh token provided" }, { status: 401 });
@@ -50,7 +51,7 @@ export async function GET(request: NextRequest) {
         });
 
         // Create a new response and set the access token cookie
-        const response = NextResponse.json({ accessToken });
+        const response = NextResponse.redirect(new URL(redirectPath, request.url));
 
         response.cookies.set("jwt", accessToken, {
             httpOnly: true,
@@ -64,7 +65,7 @@ export async function GET(request: NextRequest) {
         return response;
     } catch (error) {
         console.error("Error refreshing token:", error);
-        return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+        return NextResponse.redirect(new URL("/", request.url)); // Refresh failed, redirect to login
     }
 }
 

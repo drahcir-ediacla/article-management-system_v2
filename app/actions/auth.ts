@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import prisma from "@/prisma/client";
 import { generateAccessToken, generateRefreshToken } from "@/app/_lib/jwt";
-import { LoginFormSchema, FormState } from '@/app/_schemas/auth'
+import { LoginFormSchema, FormState } from '@/app/_schemas/authSchema'
 
 export async function login(state: FormState | undefined, formData: FormData) {
     try {

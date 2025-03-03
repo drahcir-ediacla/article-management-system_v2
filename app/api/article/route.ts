@@ -5,12 +5,11 @@ import { checkAuth } from "@/app/_lib/checkAuth";
 export async function GET(request: NextRequest) {
   try {
 
-    // const authUser = await checkAuth(request); // Get authenticated user
-    // console.log('authUser:', authUser)
+    const authUser = await checkAuth(request); // Get authenticated user
 
-    // if (!authUser) {
-    //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    // }
+    if (!authUser) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     // Fetch articles with conditional inclusion
     const articles = await prisma.article.findMany({

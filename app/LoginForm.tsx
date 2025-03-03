@@ -3,7 +3,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from "next/navigation";
 import { axiosInstance } from "./_lib/axiosInstance";
-import { LoginFormSchema } from '@/app/_schemas/auth';
+import { LoginFormSchema } from '@/app/_schemas/authSchema';
 import { IoInformationCircleSharp } from "react-icons/io5";
 import Input from './_components/Input';
 import Button from './_components/Button';

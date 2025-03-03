@@ -1,8 +1,19 @@
-
+'use client'
+import { useAppDispatch } from '@/app/redux/store'
+import { useSelector } from "react-redux";
+import { RootState } from '@/app/redux/store';
 import Link from 'next/link'
+import { useEffect } from 'react';
+import { currentAuthUser } from '@/app/redux/actions/authUserActions';
 
 const Header = () => {
-  // const user = useSelector((state: RootState) => state.auth.data);
+  const dispatch = useAppDispatch()
+  const user = useSelector((state: RootState) => state.auth.data);
+  console.log('Current User:', user)
+
+  useEffect(() => {
+    dispatch(currentAuthUser())
+  }, [dispatch])
 
   return (
     <header className='flex justify-between items-center p-[20px] text-very-light-green bg-dark-blue'>

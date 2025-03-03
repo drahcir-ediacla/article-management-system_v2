@@ -13,7 +13,7 @@ export const axiosInstance = axios.create({
 });
 
 // ✅ Function to Refresh Access Token
-const refreshAccessToken = async () => {
+export const refreshAccessToken = async () => {
     try {
         await axios.get("/api/refresh-token", { withCredentials: true });
     } catch {
@@ -21,14 +21,24 @@ const refreshAccessToken = async () => {
     }
 };
 
-// ✅ Response Interceptor (Auto-Refresh on 401)
+
 axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
-        if (error.response?.status === 401) {
-            await refreshAccessToken();
-            return axiosInstance(error.config); // ✅ Retry request after refresh
+        const originalRequest = error.config;
+
+        // 🚫 If login fails (401 on login route), do NOT attempt refresh
+        if (originalRequest.url.includes("/login")) {
+            return Promise.reject(error);
         }
+
+        // 🔄 If 401 occurs on protected routes, attempt refresh
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true; // Prevent infinite loops
+            await refreshAccessToken();
+            return axiosInstance(originalRequest); // Retry request after refresh
+        }
+
         return Promise.reject(error);
     }
 );

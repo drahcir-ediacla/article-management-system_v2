@@ -1,17 +1,19 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
+import { refreshAccessToken } from "./app/_lib/axiosInstance";
 
 const protectedRoutes: Record<string, string[]> = {
-    "/dashboard": ["Writer", "Editor"],  
-    "/dashboard/add-article": ["Writer", "Editor"], 
-    "/dashboard/add-user": ["Editor"], 
-    "/dashboard/add-company": ["Editor"], 
+    "/dashboard": ["Writer", "Editor"],
+    "/dashboard/add-article": ["Writer", "Editor"],
+    "/dashboard/add-user": ["Editor"],
+    "/dashboard/add-company": ["Editor"],
 };
 
 export async function middleware(req: NextRequest) {
     const { pathname } = req.nextUrl;
     const token = req.cookies.get("jwt")?.value;
+    const refreshToken = req.cookies.get("refreshJwt")?.value;
 
     console.log("Requested Path:", pathname);
 
@@ -40,6 +42,17 @@ export async function middleware(req: NextRequest) {
             return NextResponse.redirect(new URL("/", req.url));
         }
     }
+
+    // 🚀 If no access token but refresh token exists, attempt to refresh
+    if (!token && refreshToken) {
+        console.log("Attempting to refresh token...");
+
+        const refreshUrl = new URL("/api/middleware-refresh", req.url);
+        refreshUrl.searchParams.set("redirect", pathname); // Store where user was going
+
+        return NextResponse.redirect(refreshUrl);
+    }
+
 
     // ✅ Allow unauthenticated users to access "/"
     if (pathname === "/") {

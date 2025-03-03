@@ -57,16 +57,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       // Set access token as httpOnly cookie
       response.cookies.set("jwt", accessToken, {
         httpOnly: true,
-        secure: false, // Send cookie over HTTPS in production
+        secure: process.env.NODE_ENV === "production", // Send cookie over HTTPS in production
         sameSite: "lax", // Restrict cookie sharing across sites
-        maxAge: 24 * 60 * 60, // 30 seconds
+        maxAge: 30, // 30 seconds
         path: "/", // Cookie available across the entire app
       });
 
       // Set refresh token as httpOnly cookie
       response.cookies.set("refreshJwt", refreshToken, {
         httpOnly: true,
-        secure: false, // Send cookie over HTTPS in production
+        secure: process.env.NODE_ENV === "production", // Send cookie over HTTPS in production
         sameSite: "lax", // Restrict cookie sharing across sites
         maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
         path: "/", // Cookie available across the entire app
