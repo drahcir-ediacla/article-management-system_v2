@@ -1,10 +1,11 @@
-'use client';
+
 
 import { useEffect, useState } from "react";
 import { axiosInstance } from "@/app/_lib/axiosInstance";
 import Link from "next/link";
 import Image from "next/image";
 import Button from "../../../_components/Button";
+import prisma from "@/prisma/client";
 
 interface Company {
     id: number;
@@ -43,31 +44,45 @@ interface Article {
 }
 
 
-const ArticleList = () => {
-    const [articles, setArticles] = useState<Article[]>([]);
-    const [loading, setLoading] = useState(true);
+const ArticleList = async () => {
+    // const [articles, setArticles] = useState<Article[]>([]);
+    // const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchArticles = async () => {
-            try {
-                const response = await axiosInstance.get('/api/article', {
-                    headers: { 'Content-Type': 'application/json' },
-                    withCredentials: true
-                });
-                setArticles(response.data);
-            } catch (error) {
-                console.error("Error fetching articles:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchArticles = async () => {
+    //         try {
+    //             const response = await axiosInstance.get('/api/article', {
+    //                 headers: { 'Content-Type': 'application/json' },
+    //                 withCredentials: true
+    //             });
+    //             setArticles(response.data);
+    //         } catch (error) {
+    //             console.error("Error fetching articles:", error);
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     };
 
-        fetchArticles();
-    }, []);
+    //     fetchArticles();
+    // }, []);
 
-    if (loading) {
-        return <p>Loading articles...</p>;
-    }
+    // if (loading) {
+    //     return <p>Loading articles...</p>;
+    // }
+
+    const articles = await prisma.article.findMany({
+        include: {
+          company: {
+            select: { id: true, name: true, logo: true, status: true },
+          },
+          writer: {
+            select: { id: true, firstName: true, lastName: true, status: true },
+          },
+          editor: {
+            select: { id: true, firstName: true, lastName: true, status: true },
+          },
+        },
+      });
 
     return (
         <>
