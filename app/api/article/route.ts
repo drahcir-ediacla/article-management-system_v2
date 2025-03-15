@@ -44,11 +44,11 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
-    const { image, title, link, content, status, writerId, companyId } = body;
+    const { image, title, link, content, status, date, writerId, companyId } = body;
     console.log("Received request body:", body);
 
     // Validate payload
-    if (!image || !title || !link || !content || !status || !writerId || !companyId) {
+    if (!image || !title || !link || !content || !status || !date || !writerId || !companyId) {
       return NextResponse.json(
         { error: "Missing required fields: image, title, link, date, content, status, writerId, companyId" },
         { status: 400 }
@@ -62,6 +62,7 @@ export async function POST(request: NextRequest) {
         link,
         content,
         status,
+        date,
         writerId,
         editorId: null,
         companyId,

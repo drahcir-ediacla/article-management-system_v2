@@ -9,6 +9,10 @@ import Input from '@/app/_components/Input';
 import Button from '@/app/_components/Button';
 import DatePicker from '@/app/_components/DatePicker';
 import TipTapEditor from '../../../_components/TiptapEditor';
+import { useAppDispatch } from '@/app/redux/store';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/app/redux/store';
+import { currentAuthUser } from '@/app/redux/actions/authUserActions';
 // import 'easymde/dist/easymde.min.css';
 
 interface Company {
@@ -21,15 +25,27 @@ interface Company {
 
 
 const AddArticlePage = () => {
+  const dispatch = useAppDispatch()
+  const authUser = useSelector((state: RootState) => state.auth.data);
   const [state, setState] = useState<{ errors?: Record<string, string[]> }>({});
   const [editorContent, setEditorContent] = useState("");
   const [companyData, setCompanyData] = useState<Company[]>([]);
   const [selectedCompany, setSelectedCompany] = useState('')
+  const [companyId, setcompanyId] = useState('')
   const dropDownSelect = useRef<HTMLDivElement | null>(null);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [title, setTitle] = useState('')
   const [link, setLink] = useState('')
   const [isFocused, setIsFocused] = useState(false);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      await dispatch(currentAuthUser());
+    };
+
+    fetchUser();
+  }, [dispatch]);
+
 
   useEffect(() => {
     const handleGlobalClick = (e: MouseEvent) => {
@@ -56,7 +72,8 @@ const AddArticlePage = () => {
     fetchCompanyData();
   }, []);
 
-  const handleSelectCompany = (company: string) => {
+  const handleSelectCompany = (id: string, company: string) => {
+    setcompanyId(id)
     setSelectedCompany(company)
     setOptionsOpen(false);
   }
@@ -93,24 +110,59 @@ const AddArticlePage = () => {
     }
   };
 
-  const handleSave = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
+
+    // Convert the date to ISO string format (e.g., "2025-03-15T21:44:00Z")
+    const rawDate = formData.get('articleDate') as string;
+    const formattedDate = rawDate ? new Date(rawDate).toISOString() : null;
+
     const validatedFields = articleSchema.safeParse({
       company: formData.get('selectedCompany'),
       title: formData.get('inputTitle'),
       link: formData.get('inputLink'),
-      date: formData.get('articleDate'),
+      date: formattedDate, // Use the formatted date
       image: formData.get('image'),
       content: formData.get('content'),
     });
+    console.log('Parsed fields:', validatedFields);
 
     if (!validatedFields.success) {
       setState({ errors: validatedFields.error.flatten().fieldErrors });
       return;
     }
     console.log("Article saved successfully!", validatedFields.data);
+
+    const { title, link, date, image, content } = validatedFields.data;
+
+    try {
+      // Ensure the file input contains a valid file
+      const imgFile = formData.get("image") as File | null;
+
+      if (!imgFile || !(imgFile instanceof File)) {
+        throw new Error("No valid file selected");
+      }
+
+      // Upload the file to Cloudinary and get its URL
+      const imgUrl = await uploadImgToCloudinary(imgFile);
+      console.log("Uploaded Image URL:", imgUrl);
+
+      const response = await axiosInstance.post('/api/article', {
+        title,
+        link,
+        date,
+        image: imgUrl,
+        content,
+        status: 'ForEdit',
+        writerId: authUser?.id,
+        companyId,
+      });
+      console.log('Request sent successfully:', response.data);
+    } catch (error) {
+      console.error("Internal Error", error);
+    }
   }
 
   return (
@@ -135,7 +187,7 @@ const AddArticlePage = () => {
             {optionsOpen && (
               <div className="absolute left-0 right-0 top-[42px] z-0 bg-white border shadow-lg">
                 {companyData.map((option) => (
-                  <div key={option.id} className="font-medium px-[8px] py-[5px] cursor-pointer hover:bg-gray-101" onClick={() => handleSelectCompany(option.name)} >
+                  <div key={option.id} className="font-medium px-[8px] py-[5px] cursor-pointer hover:bg-gray-101" onClick={() => handleSelectCompany(option.id, option.name)} >
                     {option.name}
                   </div>
                 ))}

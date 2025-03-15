@@ -35,8 +35,7 @@ model Article {
   title     String        @db.VarChar(255)
   writer    User          @relation("WriterArticles", fields: [writerId], references: [id], onDelete: Cascade)
   writerId  String        @map("writer_id")
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  date      DateTime      @default(now())
 
   @@index([companyId]) // Add index for faster queries
   @@index([editorId])
