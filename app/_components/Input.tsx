@@ -10,6 +10,7 @@ interface InputProps {
     disabled?: boolean;
     readOnly?: boolean;
     onChange?: ((event: React.ChangeEvent<HTMLInputElement>) => void) | (() => void);
+    onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void | (() => void);
 }
 
 const Input = ({ id, type, name, value, placeholder, className, disabled = false, readOnly = false, onChange }: InputProps) => {

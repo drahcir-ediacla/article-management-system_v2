@@ -27,7 +27,14 @@ import {
     ListOrdered
 } from "lucide-react";
 
-const TipTapEditor = () => {
+interface TipTapEditorProps {
+    id: string;
+    name: string;
+    content: string;
+    setContent: (content: string) => void;
+}
+
+const TipTapEditor = ({ id, name, content, setContent }: TipTapEditorProps) => {
 
     const editor = useEditor({
         extensions: [
@@ -43,12 +50,16 @@ const TipTapEditor = () => {
             OrderedList, // Add Ordered List support
             ImageResize,
         ],
-        content: "<p>Hello, this is a TipTap editor!</p>",
+        content,
         editorProps: {
             attributes: {
                 spellcheck: "false", // Ensures consistent rendering
                 suppressHydrationWarning: "true", // Prevents mismatches
             },
+        },
+        onUpdate: ({ editor }) => {
+            const html = editor.getHTML();
+            setContent(html);
         },
         immediatelyRender: false,
 
@@ -183,6 +194,8 @@ const TipTapEditor = () => {
                 </div>
             )}
             <EditorContent editor={editor} />
+            {/* Hidden input to make it part of the form */}
+            <input type="hidden" id={id} name={name} value={content} />
         </div>
     );
 };
