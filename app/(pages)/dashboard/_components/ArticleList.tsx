@@ -82,19 +82,22 @@ const ArticleList = async () => {
             select: { id: true, firstName: true, lastName: true, status: true },
           },
         },
+        orderBy: {
+            date: "desc", // Sorts from latest to oldest
+          },
       });
 
     return (
         <>
             <div className="flex gap-4 justify-center font-medium m-5">
                 <Link href="/dashboard/add-article">
-                    <Button label="Add New Article" />
+                    <Button>Add New Article</Button>
                 </Link>
                 <Link href="/dashboard/add-user">
-                    <Button label="Add New User" />
+                    <Button>Add New User</Button>
                 </Link>
                 <Link href="/dashboard/add-company">
-                    <Button label="Add New Company" />
+                    <Button>Add New Company</Button>
                 </Link>
             </div>
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg m-5">
@@ -132,7 +135,7 @@ const ArticleList = async () => {
                                 </td>
                                 <td className="px-6 py-4">
                                     <span className={`inline-block text-xs py-1 px-2 rounded-md ${article.status === 'Published' ? 'text-green-700 bg-green-100' : 'text-red-700 bg-red-100'}`}>
-                                        {article.status}
+                                        {article.status === 'ForEdit' ? 'For Edit' : article.status}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 text-right">

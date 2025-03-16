@@ -13,6 +13,7 @@ import { useAppDispatch } from '@/app/redux/store';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/app/redux/store';
 import { currentAuthUser } from '@/app/redux/actions/authUserActions';
+import { useRouter } from 'next/navigation';
 // import 'easymde/dist/easymde.min.css';
 
 interface Company {
@@ -27,16 +28,18 @@ interface Company {
 const AddArticlePage = () => {
   const dispatch = useAppDispatch()
   const authUser = useSelector((state: RootState) => state.auth.data);
+  const dropDownSelect = useRef<HTMLDivElement | null>(null);
+  const router = useRouter()
   const [state, setState] = useState<{ errors?: Record<string, string[]> }>({});
   const [editorContent, setEditorContent] = useState("");
   const [companyData, setCompanyData] = useState<Company[]>([]);
   const [selectedCompany, setSelectedCompany] = useState('')
   const [companyId, setcompanyId] = useState('')
-  const dropDownSelect = useRef<HTMLDivElement | null>(null);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [title, setTitle] = useState('')
   const [link, setLink] = useState('')
   const [isFocused, setIsFocused] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -138,6 +141,7 @@ const AddArticlePage = () => {
     const { title, link, date, image, content } = validatedFields.data;
 
     try {
+      setIsLoading(true)
       // Ensure the file input contains a valid file
       const imgFile = formData.get("image") as File | null;
 
@@ -160,7 +164,13 @@ const AddArticlePage = () => {
         companyId,
       });
       console.log('Request sent successfully:', response.data);
+      if (response.status === 201) {
+        router.push('/dashboard');
+      }
+      setIsLoading(false)
+      
     } catch (error) {
+      setIsLoading(false)
       console.error("Internal Error", error);
     }
   }
@@ -252,7 +262,16 @@ const AddArticlePage = () => {
           {state.errors?.content && <div className="flex gap-[2px] text-red-600"><IoInformationCircleSharp className="text-lg" /> <span className="text-red-500 text-sm">{state.errors.content}</span></div>}
         </div>
 
-        <Button label='Save' />
+        <Button className='flex justify-center' disabled={isLoading}>
+          {!isLoading ? (
+            <span className='font-medium'>Save</span>
+          ) : (
+            <>
+              <svg className="mr-3 -ml-1 size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+              <span className='font-medium'>Saving...</span>
+            </>
+          )}
+        </Button>
       </form>
     </div>
   );
