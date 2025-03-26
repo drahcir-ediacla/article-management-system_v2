@@ -4,9 +4,9 @@ import { jwtVerify } from "jose";
 
 const protectedRoutes: Record<string, string[]> = {
     "/dashboard": ["Writer", "Editor"],
-    "/dashboard/add-article": ["Writer", "Editor"],
-    "/dashboard/add-user": ["Editor"],
-    "/dashboard/add-company": ["Editor"],
+    "/add-article": ["Writer", "Editor"],
+    "/add-user": ["Editor"],
+    "/add-company": ["Editor"],
 };
 
 export async function middleware(req: NextRequest) {
@@ -71,8 +71,8 @@ export const config = {
     matcher: [
         "/",
         "/dashboard",
-        "/dashboard/add-article",
-        "/dashboard/add-user",
-        "/dashboard/add-company",
+        "/add-article",
+        "/add-user",
+        "/add-company",
     ],
 };

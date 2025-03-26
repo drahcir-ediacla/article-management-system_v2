@@ -90,13 +90,13 @@ const ArticleList = async () => {
     return (
         <>
             <div className="flex gap-4 justify-center font-medium m-5">
-                <Link href="/dashboard/add-article">
+                <Link href="/add-article">
                     <Button>Add New Article</Button>
                 </Link>
-                <Link href="/dashboard/add-user">
+                <Link href="add-user">
                     <Button>Add New User</Button>
                 </Link>
-                <Link href="/dashboard/add-company">
+                <Link href="/add-company">
                     <Button>Add New Company</Button>
                 </Link>
             </div>

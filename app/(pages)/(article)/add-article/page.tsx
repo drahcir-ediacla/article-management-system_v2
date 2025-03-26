@@ -262,7 +262,7 @@ const AddArticlePage = () => {
           {state.errors?.content && <div className="flex gap-[2px] text-red-600"><IoInformationCircleSharp className="text-lg" /> <span className="text-red-500 text-sm">{state.errors.content}</span></div>}
         </div>
 
-        <Button className='flex justify-center' disabled={isLoading}>
+        <Button className={`flex justify-center ${isLoading ? 'bg-gray-400' : ''}`} disabled={isLoading}>
           {!isLoading ? (
             <span className='font-medium'>Save</span>
           ) : (
