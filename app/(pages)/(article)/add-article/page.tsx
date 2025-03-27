@@ -26,7 +26,7 @@ interface Company {
 
 
 const AddArticlePage = () => {
-  const dispatch = useAppDispatch()
+  // const dispatch = useAppDispatch()
   const authUser = useSelector((state: RootState) => state.auth.data);
   const dropDownSelect = useRef<HTMLDivElement | null>(null);
   const router = useRouter()
@@ -41,13 +41,13 @@ const AddArticlePage = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false)
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      await dispatch(currentAuthUser());
-    };
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     await dispatch(currentAuthUser());
+  //   };
 
-    fetchUser();
-  }, [dispatch]);
+  //   fetchUser();
+  // }, [dispatch]);
 
 
   useEffect(() => {
@@ -64,6 +64,7 @@ const AddArticlePage = () => {
   }, []);
 
   useEffect(() => {
+    const controller = new AbortController();
     const fetchCompanyData = async () => {
       try {
         const response = await axiosInstance.get('/api/company');
@@ -73,6 +74,7 @@ const AddArticlePage = () => {
       }
     };
     fetchCompanyData();
+    return () => controller.abort();
   }, []);
 
   const handleSelectCompany = (id: string, company: string) => {
@@ -168,7 +170,7 @@ const AddArticlePage = () => {
         router.push('/dashboard');
       }
       setIsLoading(false)
-      
+
     } catch (error) {
       setIsLoading(false)
       console.error("Internal Error", error);

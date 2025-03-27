@@ -7,17 +7,17 @@ import { useEffect } from 'react';
 import { currentAuthUser } from '@/app/redux/actions/authUserActions';
 
 const Header = () => {
-  const dispatch = useAppDispatch()
+  // const dispatch = useAppDispatch()
   const user = useSelector((state: RootState) => state.auth.data);
   console.log('Current User:', user)
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      await dispatch(currentAuthUser());
-    };
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     await dispatch(currentAuthUser());
+  //   };
   
-    fetchUser();
-  }, [dispatch]);
+  //   fetchUser();
+  // }, [dispatch]);
   
 
   return (
