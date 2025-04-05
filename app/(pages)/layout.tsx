@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react'
 import Header from './_components/Header';
-import HydrateUser from '../_components/HydrateUser';
+import QueryProvider from './_components/QueryProvider';
 interface Props {
     children: ReactNode;
 }
@@ -8,9 +8,8 @@ interface Props {
 const AdminLayout = ({ children }: Props) => {
     return (
         <>
-            <HydrateUser />
             <Header />
-            <div>{children}</div>
+            <QueryProvider>{children}</QueryProvider>
         </>
     )
 }
