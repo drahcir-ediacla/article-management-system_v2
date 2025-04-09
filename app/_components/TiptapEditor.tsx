@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
@@ -36,24 +37,24 @@ interface TipTapEditorProps {
 
 const TipTapEditor = ({ id, name, content, setContent }: TipTapEditorProps) => {
 
+    console.log('TipTap Content', content)
+    
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
-                bulletList: false,  // Disable StarterKit's default BulletList
+                bulletList: false, // Disable StarterKit's default BulletList
                 orderedList: false, // Disable StarterKit's default OrderedList
             }),
-            TextAlign.configure({
-                types: ["heading", "paragraph"],
-            }),
+            TextAlign.configure({ types: ["heading", "paragraph"] }),
             Underline,
-            BulletList,  // Add Bullet List support
+            BulletList, // Add Bullet List support
             OrderedList, // Add Ordered List support
             ImageResize,
         ],
-        content,
+        content: "", // Start empty; we'll set content after editor is mounted
         editorProps: {
             attributes: {
-                spellcheck: "false", // Ensures consistent rendering
+                spellCheck: "false", // Ensures consistent rendering
                 suppressHydrationWarning: "true", // Prevents mismatches
             },
         },
@@ -62,11 +63,18 @@ const TipTapEditor = ({ id, name, content, setContent }: TipTapEditorProps) => {
             setContent(html);
         },
         immediatelyRender: false,
-
     });
 
-    if (!editor) return null;
 
+    // Ensure the content is set once after the editor is initialized
+    useEffect(() => {
+        if (editor && content) {
+            editor.commands.setContent(content, false);
+        }
+    }, [editor, content]);
+
+    if (!editor) return null;
+    
     const addImage = () => {
         const url = window.prompt("URL");
         if (url) {

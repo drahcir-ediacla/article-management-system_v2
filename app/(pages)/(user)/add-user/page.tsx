@@ -1,6 +1,6 @@
 import Input from "@/app/_components/Input"
 
-const AddUserPage = () => {
+const AddUser = () => {
     return (
 
         <div className="m-[20px]">
@@ -48,4 +48,4 @@ const AddUserPage = () => {
     )
 }
 
-export default AddUserPage
+export default AddUser

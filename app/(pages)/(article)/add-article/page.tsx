@@ -123,6 +123,7 @@ const AddArticlePage = () => {
     // Convert the date to ISO string format (e.g., "2025-03-15T21:44:00Z")
     const rawDate = formData.get('articleDate') as string;
     const formattedDate = rawDate ? new Date(rawDate).toISOString() : null;
+    console.log('formattedDate:', formattedDate)
 
     const validatedFields = articleSchema.safeParse({
       company: formData.get('selectedCompany'),

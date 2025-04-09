@@ -99,6 +99,7 @@ export async function PUT(request: NextRequest) {
         link,
         content,
         status,
+        date,
         writerId,
         editorId,
         companyId,
