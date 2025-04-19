@@ -30,6 +30,7 @@ const AddArticlePage = () => {
   const authUser = useSelector((state: RootState) => state.auth.data);
   const dropDownSelect = useRef<HTMLDivElement | null>(null);
   const router = useRouter()
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [state, setState] = useState<{ errors?: Record<string, string[]> }>({});
   const [editorContent, setEditorContent] = useState("");
   const [companyData, setCompanyData] = useState<Company[]>([]);
@@ -40,6 +41,7 @@ const AddArticlePage = () => {
   const [link, setLink] = useState('')
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false)
+  const [previewImg, setPreviewImg] = useState<string | null>(null);
 
   // useEffect(() => {
   //   const fetchUser = async () => {
@@ -76,12 +78,35 @@ const AddArticlePage = () => {
     fetchCompanyData();
     return () => controller.abort();
   }, []);
+  
+  // Revoke the object URL to avoid memory leaks
+  useEffect(() => {
+    return () => {
+      if (previewImg) {
+        URL.revokeObjectURL(previewImg);
+      }
+    };
+  }, [previewImg]);
 
   const handleSelectCompany = (id: string, company: string) => {
     setcompanyId(id)
     setSelectedCompany(company)
     setOptionsOpen(false);
   }
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const previewURL = URL.createObjectURL(file);
+      setPreviewImg(previewURL);
+    } else {
+      setPreviewImg(null);
+    }
+  };
+
+  const handleThumbnailClick = () => {
+    fileInputRef.current?.click();
+  };
 
   const uploadImgToCloudinary = async (file: File) => {
     const formData = new FormData();
@@ -254,7 +279,22 @@ const AddArticlePage = () => {
 
         <div className='flex flex-col gap-[5px]'>
           <label htmlFor='imageId'><b>Image</b></label>
-          <input type='file' id='imageId' name='image' accept=".png,.jpg,.jpeg" />
+          <div onClick={handleThumbnailClick} className='cursor-pointer w-[200px] h-[200px] border rounded-md flex items-center justify-center overflow-hidden bg-gray-100'>
+            {previewImg ? (
+              <img src={previewImg} alt='Preview' className='object-cover w-full h-full' />
+            ) : (
+              <span className='text-gray-500 text-sm'>Click to select image</span>
+            )}
+          </div>
+          <input
+            type='file'
+            id='imageId'
+            name='image'
+            accept=".png,.jpg,.jpeg"
+            onChange={handleImageChange}
+            ref={fileInputRef}
+            className='hidden'
+          />
           {state.errors?.image && <div className="flex gap-[2px]"><IoInformationCircleSharp color='#dc2626' size={18} /><span className="text-red-500 text-sm">{state.errors.image}</span></div>}
         </div>
 

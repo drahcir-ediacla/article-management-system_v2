@@ -27,6 +27,7 @@ interface Company {
 const EditArticle = () => {
     const { id, articleTitle } = useParams() as { id: string; articleTitle: string }; // cast params
     const dropDownSelect = useRef<HTMLDivElement | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const [state, setState] = useState<{ errors?: Record<string, string[]> }>({});
     const [article, setArticle] = useState<Article>({
         id: '',
@@ -45,6 +46,7 @@ const EditArticle = () => {
     const [link, setLink] = useState('')
     const [isFocused, setIsFocused] = useState(false);
     const [isLoading, setIsLoading] = useState(false)
+    const [previewImg, setPreviewImg] = useState<string | null>(null);
     // // Decode the title from URL encoding
     // const decodedTitle = decodeURIComponent(params.title)
     // console.log('decodedTitle:', decodedTitle)
@@ -86,6 +88,7 @@ const EditArticle = () => {
                 setTitle(articleDetails.title)
                 setcompanyId(articleDetails.companyId)
                 setEditorContent(articleDetails.content)
+                setPreviewImg(articleDetails.image)
             } catch (error) {
                 console.error('Error fetching article data:', error);
             }
@@ -93,16 +96,69 @@ const EditArticle = () => {
         getSingleArticle();
     }, [])
 
-
-
     // Handle not found scenario
     if (!article) return <div>Article not found</div>
+
+    // Revoke the object URL to avoid memory leaks
+    useEffect(() => {
+        return () => {
+            if (previewImg) {
+                URL.revokeObjectURL(previewImg);
+            }
+        };
+    }, [previewImg]);
 
     const handleSelectCompany = (id: string, company: string) => {
         setcompanyId(id)
         setSelectedCompany(company)
         setOptionsOpen(false);
     }
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const previewURL = URL.createObjectURL(file);
+            setPreviewImg(previewURL);
+        } else {
+            setPreviewImg(null);
+        }
+    };
+
+    const handleThumbnailClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const uploadImgToCloudinary = async (file: File) => {
+        const formData = new FormData();
+        formData.append('upload_preset', 'auwcvbw0');
+        formData.append('cloud_name', 'yogeek-cloudinary');
+        formData.append('folder', 'samples');
+        formData.append('file', file);
+
+        const CLOUDINARY_API = process.env.NEXT_PUBLIC_CLOUDINARY_API;
+
+        if (!CLOUDINARY_API) {
+            throw new Error('CLOUDINARY_API is not defined in environment variables.');
+        }
+
+        try {
+            const response = await fetch(CLOUDINARY_API, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                return data.secure_url; // Return single uploaded file info
+            } else {
+                console.error(`Error uploading ${file.name}: ${response.statusText}`);
+                return null; // Return null for unsuccessful uploads
+            }
+        } catch (error) {
+            console.error(`Error uploading ${file.name}:`, error);
+            return null; // Return null for errors
+        }
+    };
 
     return (
         <div className="m-[20px]">
@@ -188,7 +244,22 @@ const EditArticle = () => {
 
                 <div className='flex flex-col gap-[5px]'>
                     <label htmlFor='imageId'><b>Image</b></label>
-                    <input type='file' id='imageId' name='image' accept=".png,.jpg,.jpeg" />
+                    <div onClick={handleThumbnailClick} className='cursor-pointer w-[200px] h-[200px] border rounded-md flex items-center justify-center overflow-hidden bg-gray-100'>
+                        {previewImg ? (
+                            <img src={previewImg} alt='Preview' className='object-cover w-full h-full' />
+                        ) : (
+                            <span className='text-gray-500 text-sm'>Click to select image</span>
+                        )}
+                    </div>
+                    <input
+                        type='file'
+                        id='imageId'
+                        name='image'
+                        accept=".png,.jpg,.jpeg"
+                        onChange={handleImageChange}
+                        ref={fileInputRef}
+                        className='hidden'
+                    />
                     {state.errors?.image && <div className="flex gap-[2px]"><IoInformationCircleSharp color='#dc2626' size={18} /><span className="text-red-500 text-sm">{state.errors.image}</span></div>}
                 </div>
 

@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
   try {
 
     const authUser = await checkAuth(request); // Get authenticated user
+    console.log('authUser:', authUser)
 
     if (!authUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -77,38 +78,3 @@ export async function POST(request: NextRequest) {
 }
 
 
-export async function PUT(request: NextRequest) {
-  try {
-    const body = await request.json();
-
-    const { id, image, title, link, date, content, status, writerId, editorId, companyId } = body;
-
-    // Validate payload
-    if (!id || !image || !title || !link || !date || !content || !status || !writerId || !editorId || !companyId) {
-      return NextResponse.json(
-        { error: "Missing required fields: id, image, title, link, date, content, status, writerId, editorId, companyId" },
-        { status: 400 }
-      );
-    }
-
-    const updatedArticle = await prisma.article.update({
-      where: { id },
-      data: {
-        image,
-        title,
-        link,
-        content,
-        status,
-        date,
-        writerId,
-        editorId,
-        companyId,
-      },
-    });
-
-    return NextResponse.json(updatedArticle, { status: 200 });
-  } catch (error) {
-    console.error("Error updating article:", error);
-    return NextResponse.json({ error: "Failed to update article" }, { status: 500 });
-  }
-}
